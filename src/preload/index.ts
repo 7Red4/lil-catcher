@@ -5,7 +5,9 @@ import { electronAPI } from '@electron-toolkit/preload';
 const api = {
   minimizeWindow: () => ipcRenderer.send('minimize-window'),
   toggleWindow: () => ipcRenderer.send('toggle-window'),
-  closeWindow: () => ipcRenderer.send('close-window')
+  closeWindow: () => ipcRenderer.send('close-window'),
+
+  callPathPicker: () => ipcRenderer.invoke('call-path-picker')
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

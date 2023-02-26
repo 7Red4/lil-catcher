@@ -1,16 +1,95 @@
 <template>
-  <div>
-    <v-form>
-      <v-text-field label="輸入網址" />
+  <div v-auto-animate>
+    <v-form ref="FORM">
+      <v-text-field
+        ref="EL_INPUT_URL"
+        v-model="inputURL"
+        label="輸入網址"
+        @update:focused="onInputURLFocused"
+      />
+      <div v-if="!!inputURL">
+        <v-row>
+          <v-col cols="12" class="d-flex">
+            <v-btn color="primary" @click="submit">
+              <svg-icon type="mdi" :path="mdiVideo" />
+              獲取為 影片
+            </v-btn>
+            <div class="px-2"></div>
+            <v-btn color="secondary">
+              <svg-icon type="mdi" :path="mdiFileGifBox" />
+              獲取為 gif
+            </v-btn>
+          </v-col>
+
+          <v-col cols="12">
+            <v-text-field v-model="fileTitle" label="儲存標題" :rules="[rules?.required as any]" />
+            <v-text-field
+              v-model="filePath"
+              label="儲存路徑"
+              readonly
+              :rules="[rules?.required as any]"
+            >
+              <template #append>
+                <v-btn icon size="x-small" @click="pickPath">
+                  <svg-icon type="mdi" :path="mdiDotsVertical" />
+                </v-btn>
+              </template>
+            </v-text-field>
+          </v-col>
+        </v-row>
+      </div>
     </v-form>
-    <div class="d-flex">
-      <v-btn color="primary">獲取為 影片</v-btn>
-      <div class="px-2"></div>
-      <v-btn color="secondary">獲取為 gif</v-btn>
-    </div>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { mdiVideo, mdiFileGifBox, mdiDotsVertical } from '@mdi/js';
+import { _rules } from '../injections';
+import { ref, inject } from 'vue';
+import dayjs from 'dayjs';
+
+// const date = new Date();
+const now = dayjs().format('YYYYMMDD_Hmmss');
+
+const rules = inject(_rules);
+
+const FORM = ref();
+const EL_INPUT_URL = ref();
+
+const inputURL = ref('');
+const onInputURLFocused = async (isFocused) => {
+  if (!isFocused) return;
+  const copiedText = await navigator.clipboard.readText();
+  if (inputURL.value === copiedText) return;
+  analyzeText(copiedText);
+};
+
+const analyzeText = (text) => {
+  const urlReg =
+    /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)?/;
+  const isUrl = urlReg.test(text);
+
+  if (isUrl) {
+    inputURL.value = text;
+    // this.getVideoInfo(text);
+    EL_INPUT_URL.value?.blur();
+  }
+};
+
+const fileTitle = ref('' || now);
+const filePath = ref('');
+
+const pickPath = async () => {
+  const { filePaths } = await window.api.callPathPicker();
+
+  if (filePaths.length) {
+    filePath.value = filePaths[0];
+  }
+};
+
+const submit = () => {
+  if (!FORM.value.validate()) return;
+};
+</script>
 
 <style scoped></style>

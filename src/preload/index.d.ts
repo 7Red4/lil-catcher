@@ -7,6 +7,8 @@ declare global {
       minimizeWindow: () => void;
       toggleWindow: () => void;
       closeWindow: () => void;
+
+      callPathPicker: () => Electron.OpenDialogReturnValue;
     };
   }
 }

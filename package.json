@@ -22,10 +22,13 @@
   "dependencies": {
     "@electron-toolkit/preload": "^1.0.3",
     "@electron-toolkit/utils": "^1.0.2",
+    "@formkit/auto-animate": "*",
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/js": "^7.1.96",
     "@mdi/light-js": "^0.2.63",
+    "dayjs": "^1.11.7",
     "electron-updater": "^5.3.0",
+    "sass": "^1.58.3",
     "vuetify": "^3.1.5"
   },
   "devDependencies": {

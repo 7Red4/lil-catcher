@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron';
+import { app, shell, dialog, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
@@ -8,8 +8,8 @@ let mainWindow;
 function createWindow(): void {
   mainWindow = new BrowserWindow({
     frame: false,
-    width: 900,
-    height: 670,
+    width: 820,
+    height: 960,
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',
     ...(process.platform === 'linux' ? { icon } : {}),
@@ -62,4 +62,11 @@ ipcMain.on('toggle-window', () =>
 );
 ipcMain.on('close-window', () => {
   mainWindow.hide();
+});
+ipcMain.handle('call-path-picker', async () => {
+  const path = await dialog.showOpenDialog({
+    properties: ['openFile', 'openDirectory', 'multiSelections']
+  });
+
+  return path;
 });
