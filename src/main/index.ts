@@ -1,6 +1,7 @@
 import { app, shell, dialog, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
+import { getInfo } from '../ipcMain/ytDlpCaller';
 import icon from '../../resources/icon.png?asset';
 
 let mainWindow;
@@ -63,10 +64,15 @@ ipcMain.on('toggle-window', () =>
 ipcMain.on('close-window', () => {
   mainWindow.hide();
 });
+
 ipcMain.handle('call-path-picker', async () => {
   const path = await dialog.showOpenDialog({
     properties: ['openFile', 'openDirectory', 'multiSelections']
   });
 
   return path;
+});
+
+ipcMain.handle('get-info', (event, url) => {
+  return getInfo(url);
 });

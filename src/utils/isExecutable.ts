@@ -1,11 +1,13 @@
 const { exec } = require('child_process');
 const isWindows = process.platform === 'win32';
 
-export default function (_command: string) {
-  const result: {
-    path: string;
-    isExecutable: boolean;
-  } = {
+type TResult = {
+  path: string;
+  isExecutable: boolean;
+};
+
+export default function (_command: string): TResult {
+  const result: TResult = {
     path: '',
     isExecutable: false
   };
@@ -17,6 +19,7 @@ export default function (_command: string) {
     }
 
     result.path = stdout.trim();
+
     if (result.path) {
       result.isExecutable = true;
     } else {
@@ -25,4 +28,6 @@ export default function (_command: string) {
 
     return result;
   });
+
+  return result;
 }

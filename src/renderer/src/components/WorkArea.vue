@@ -9,9 +9,16 @@
       />
       <div v-if="!!inputURL">
         <v-row>
+          <v-col cols="12">
+            <Async :loading="isGettingInfo">
+              <VideoInfoCard :video-details="videoInfo" />
+            </Async>
+          </v-col>
+        </v-row>
+        <v-row>
           <v-col cols="12" class="d-flex">
             <v-btn color="primary" @click="submit">
-              <svg-icon type="mdi" :path="mdiVideo" />
+              <svg-icon type="mdi" :path="mdiVideoOutline" />
               獲取為 影片
             </v-btn>
             <div class="px-2"></div>
@@ -30,7 +37,7 @@
               :rules="[rules?.required as any]"
             >
               <template #append>
-                <v-btn icon size="x-small" @click="pickPath">
+                <v-btn icon size="x-small" color="primary" @click="pickPath">
                   <svg-icon type="mdi" :path="mdiDotsVertical" />
                 </v-btn>
               </template>
@@ -43,10 +50,13 @@
 </template>
 
 <script setup lang="ts">
-import { mdiVideo, mdiFileGifBox, mdiDotsVertical } from '@mdi/js';
+import { mdiVideoOutline, mdiFileGifBox, mdiDotsVertical } from '@mdi/js';
+import { VideoDetails } from '../../../type';
 import { _rules } from '../injections';
 import { ref, inject } from 'vue';
 import dayjs from 'dayjs';
+import VideoInfoCard from './VideoInfoCard.vue';
+import Async from './Async.vue';
 
 // const date = new Date();
 const now = dayjs().format('YYYYMMDD_Hmmss');
@@ -71,9 +81,19 @@ const analyzeText = (text) => {
 
   if (isUrl) {
     inputURL.value = text;
-    // this.getVideoInfo(text);
+    getInfo(text);
     EL_INPUT_URL.value?.blur();
   }
+};
+
+const videoInfo = ref<VideoDetails>();
+const isGettingInfo = ref(false);
+const getInfo = async (text) => {
+  isGettingInfo.value = true;
+  videoInfo.value = await window.api.getInfo(text);
+  console.log(videoInfo.value);
+
+  isGettingInfo.value = false;
 };
 
 const fileTitle = ref('' || now);

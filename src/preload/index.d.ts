@@ -9,6 +9,7 @@ declare global {
       closeWindow: () => void;
 
       callPathPicker: () => Electron.OpenDialogReturnValue;
+      getInfo: (url: string) => VideoDetails;
     };
   }
 }

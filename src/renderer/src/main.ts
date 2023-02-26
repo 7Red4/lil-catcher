@@ -4,7 +4,7 @@ import SvgIcon from '@jamescoyle/vue-icon';
 
 // Vuetify
 import 'vuetify/styles';
-import { createVuetify } from 'vuetify';
+import { ThemeDefinition, createVuetify } from 'vuetify';
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 
@@ -14,10 +14,22 @@ import './assets/css/main.scss';
 
 import injections from './injections';
 
+const customTheme: ThemeDefinition = {
+  dark: true,
+  colors: {
+    background: '#2b2d3a',
+    primary: '#6cb6eb',
+    surface: '#3c3e4b'
+  }
+};
+
 const vuetify = createVuetify({
   ssr: true,
   theme: {
-    defaultTheme: 'dark'
+    defaultTheme: 'customTheme',
+    themes: {
+      customTheme
+    }
   },
   components,
   directives,
