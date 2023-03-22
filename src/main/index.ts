@@ -1,7 +1,7 @@
 import { app, shell, dialog, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
-import { getInfo } from '../ipcMain/ytDlpCaller';
+import { getInfo, doDownloadYT, doDownloadDirect } from '../ipcMain/ytDlpCaller';
 import icon from '../../resources/icon.png?asset';
 
 let mainWindow;
@@ -75,4 +75,18 @@ ipcMain.handle('call-path-picker', async () => {
 
 ipcMain.handle('get-info', (event, url) => {
   return getInfo(url);
+});
+
+ipcMain.handle('start-process', (event, { processName, payload }) => {
+  switch (processName) {
+    case 'ytDlp:youtube':
+      console.log('start-process:ytDlp:youtube');
+      return doDownloadYT(payload);
+    case 'ytDlp:direct':
+      console.log('start-process:ytDlp:direct');
+      return doDownloadDirect(payload);
+
+    default:
+      break;
+  }
 });

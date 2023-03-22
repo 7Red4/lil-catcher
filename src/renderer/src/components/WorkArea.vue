@@ -43,6 +43,10 @@
               </template>
             </v-text-field>
           </v-col>
+
+          <v-col>
+            <v-btn color="primary" @click="submit">開始下載</v-btn>
+          </v-col>
         </v-row>
       </div>
     </v-form>
@@ -59,6 +63,11 @@ import VideoInfoCard from './VideoInfoCard.vue';
 import Async from './Async.vue';
 
 // const date = new Date();
+enum ETestingURLs {
+  youtube = 'https://www.youtube.com/watch?v=yxNfJTxydDA',
+  twitter = 'https://twitter.com/013095Yui/status/1638104252357963778'
+}
+
 const now = dayjs().format('YYYYMMDD_Hmmss');
 
 const rules = inject(_rules);
@@ -109,7 +118,49 @@ const pickPath = async () => {
 
 const submit = () => {
   if (!FORM.value.validate()) return;
+  console.log('submit');
+
+  // type Payload = {
+  //   url: string;
+  //   title: string;
+  //   vQuallity?: number | 'best';
+  //   aQuality?: number | 'best';
+  //   fileExtension: string;
+  //   path: string;
+  // };
+
+  // window.api.startProcess({
+  //   processName: 'ytDlp:youtube',
+  //   payload: {
+  //     url: inputURL.value,
+  //     title: fileTitle.value,
+  //     vQuallity: 'best',
+  //     aQuality: 'best',
+  //     fileExtension: 'mp4',
+  //     path: filePath.value
+  //   }
+  // });
+
+  window.api.startProcess({
+    processName: 'ytDlp:direct',
+    payload: {
+      url: inputURL.value,
+      title: fileTitle.value,
+      path: filePath.value
+    }
+  });
 };
+
+const usingTest = true;
+const testingSubject: keyof typeof ETestingURLs = 'youtube';
+
+if (process.env.NODE_ENV === 'development') {
+  if (usingTest) {
+    inputURL.value = ETestingURLs[testingSubject];
+    getInfo(ETestingURLs[testingSubject]);
+    filePath.value = 'D:\\.download\\ytdl';
+  }
+}
 </script>
 
 <style scoped></style>

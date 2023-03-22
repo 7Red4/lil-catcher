@@ -10,6 +10,7 @@ declare global {
 
       callPathPicker: () => Electron.OpenDialogReturnValue;
       getInfo: (url: string) => VideoDetails;
+      startProcess: (payload: { processName: string; payload: any }) => void;
     };
   }
 }

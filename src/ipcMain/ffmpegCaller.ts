@@ -4,10 +4,22 @@ const { spawn } = require('child_process');
 const ffmpeg = isExecutable('ffmpeg');
 
 const call = (args) => {
-  const ffmpegProcess = spawn(ffmpeg, args);
+  if (!ffmpeg?.isExecutable) return;
 
-  ffmpegProcess.stdout.on('data', () => {
-    // Do something with data
+  console.log(`applying ffmpeg with args: ${args}`);
+
+  const ffmpegProcess = spawn(ffmpeg?.path, args);
+
+  ffmpegProcess.stdout.on('data', (data) => {
+    console.log(data.toString());
+  });
+
+  ffmpegProcess.stderr.on('data', (data) => {
+    console.log(data.toString());
+  });
+
+  ffmpegProcess.on('close', (code) => {
+    console.log(`child process exited with code ${code}`);
   });
 };
 

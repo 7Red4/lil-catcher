@@ -8,7 +8,9 @@ const api = {
   closeWindow: () => ipcRenderer.send('close-window'),
 
   callPathPicker: () => ipcRenderer.invoke('call-path-picker'),
-  getInfo: (url: string) => ipcRenderer.invoke('get-info', url)
+  getInfo: (url: string) => ipcRenderer.invoke('get-info', url),
+  startProcess: (payload: { processName: string; payload: any }) =>
+    ipcRenderer.invoke('start-process', payload)
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to
