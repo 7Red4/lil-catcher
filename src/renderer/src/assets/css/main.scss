@@ -35,3 +35,7 @@ body {
     }
   }
 }
+
+.v-input + .v-input {
+  margin-top: 8px;
+}

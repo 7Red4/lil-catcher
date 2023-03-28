@@ -21,6 +21,8 @@ const call = (args) => {
   ffmpegProcess.on('close', (code) => {
     console.log(`child process exited with code ${code}`);
   });
+
+  return ffmpegProcess;
 };
 
 export { call };

@@ -1,5 +1,6 @@
 import isExecutable from '../utils/isExecutable';
 import { call as ffmpegCall } from './ffmpegCaller';
+import fs from 'fs';
 const { spawn } = require('child_process');
 
 const ytDlp = isExecutable('yt-dlp');
@@ -33,6 +34,7 @@ const getInfo = (url) => {
 };
 
 const doDownloadYT = (payload: {
+  type: 'vid' | 'gif';
   url: string;
   title: string;
   vQuallity: number | 'best';
@@ -41,6 +43,8 @@ const doDownloadYT = (payload: {
   path: string;
 }) => {
   if (!ytDlp?.isExecutable) return;
+
+  const output = `${payload.path}/${payload.title}.${payload.fileExtension}`;
 
   return new Promise((resolve) => {
     const getVideoM3u8 = new Promise((resolve, reject) => {
@@ -93,37 +97,59 @@ const doDownloadYT = (payload: {
         '0:v:0',
         '-map',
         '1:a:0',
-        `${payload.path}/${payload.title}.${payload.fileExtension}`
+        output
       ]);
     });
   });
 };
 
-const doDownloadDirect = (payload: { url: string; title: string; path: string }) => {
+const doDownloadDirect = (payload: {
+  type: 'vid' | 'gif';
+  url: string;
+  title: string;
+  path: string;
+}) => {
   if (!ytDlp?.isExecutable) return;
+
+  const output = `${payload.path}/${payload.title}.mp4`;
 
   return new Promise((resolve) => {
     try {
-      const ytDlpProcess = spawn(ytDlp?.path, [
-        payload.url,
-        '-o',
-        `${payload.path}/${payload.title}.%(ext)s`
-      ]);
+      const ytDlpProcess = spawn(ytDlp?.path, [payload.url, '-o', output]);
 
       let scriptOutput = '';
 
       ytDlpProcess.stdout.on('data', (data) => {
         data = data.toString();
         scriptOutput += data;
-        console.log(data);
       });
 
       ytDlpProcess.on('close', () => {
         try {
-          const jsonData = JSON.parse(scriptOutput);
-          console.log('END: ytDlpProcess');
           console.log(scriptOutput);
-          resolve(jsonData);
+
+          if (payload.type === 'gif') {
+            const toGIFProcess = ffmpegCall([
+              '-i',
+              output,
+              '-vf',
+              'fps=24,scale=720:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse',
+              '-loop',
+              '0',
+              `${payload.path}/${payload.title}.gif`
+            ]);
+
+            toGIFProcess.on('close', () => {
+              console.log('END: toGIFProcess');
+              fs.unlink(output, (err) => {
+                if (err) {
+                  console.error(err);
+                  return;
+                }
+              });
+            });
+          }
+          resolve(true);
         } catch {
           resolve(null);
         }
